@@ -1,1 +1,5 @@
 Diakg_multi_atten_model2.pt
+/.venv/
+/bert_base_chinese/
+/data/
+/log/
