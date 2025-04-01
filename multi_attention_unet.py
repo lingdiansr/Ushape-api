@@ -100,14 +100,16 @@ class DownLayer(nn.Module):
     def __init__(self, in_ch, out_ch):
         super().__init__()
         self.down_conv = nn.Sequential(
-            nn.MaxPool2d(2),
+            # nn.MaxPool2d(2),
+            nn.MaxPool2d(kernel_size=1),
             DoubleConv(in_ch, out_ch),
             nn.Conv2d(out_ch, out_ch, 3, padding=1),
             nn.BatchNorm2d(out_ch)
         )
         # 修改残差路径卷积参数
         self.shortcut = nn.Sequential(
-            nn.MaxPool2d(2),  # 保持相同下采样方式
+            nn.MaxPool2d(kernel_size=1),  # 保持相同下采样方式
+            # nn.MaxPool2d(2),  # 保持相同下采样方式
             nn.Conv2d(in_ch, out_ch, 1)  # 仅调整通道数
         )
 

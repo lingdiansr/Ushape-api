@@ -91,7 +91,7 @@ def predict():
         logger = utils.get_logger(config.dataset)
         logger.info(config)
         config.logger = logger
-        datasets, ori_data = data_loader.load_data_bert(config)
+        # datasets, ori_data = data_loader.load_data_bert(config)
 
         dataset = RelationDataset(*process_bert(process_data, tokenizers, vocab))
         dataloader = DataLoader(dataset=dataset,
@@ -107,7 +107,7 @@ def predict():
         trainer = predict_trainer(model)
         # trainer = multi_atten_main.Trainer(model)
         trainer.load(config.save_path)
-        result = trainer.predict("Final", dataloader, ori_data[-1])
+        result = trainer.predict("Final", dataloader, process_data)
         print(result)
         return jsonify(result)
 
