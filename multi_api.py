@@ -168,6 +168,7 @@ class predict_trainer(object):
                 # data_batch = [data for data in data_batch[:-1]]
                 bert_inputs, grid_labels, grid_mask2d, pieces2word, dist_inputs, sent_length = data_batch
 
+                #   "error": "Given input size: (512x1x1). Calculated output size: (512x0x0). Output size is too small"
                 outputs = model(bert_inputs, grid_mask2d, dist_inputs, pieces2word, sent_length)
                 length = sent_length
 
