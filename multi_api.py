@@ -116,6 +116,45 @@ def predict():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/predicts', methods=['POST'])
+def predicts():
+    try:
+        data = request.json  # 直接接收JSON数组
+        if not isinstance(data, list):
+            return jsonify({"error": "Request body must be a list of sentence objects"}), 400
+
+        process_data = []
+        for item in data:
+            if 'sentence' not in item:
+                return jsonify({"error": "Each item must have 'sentence' field"}), 400
+            # 合并分句为完整句子（根据模型需求选择是否合并）
+            # full_sentence = ''.join(item['sentence'])
+            process_data.append({
+                # 'sentence': full_sentence,  # 或保留分句 item['sentence']
+                'sentence': item['sentence'],  # 或保留分句 item['sentence']
+                'ner': []
+            })
+
+        # 处理数据并生成Dataset
+        dataset = RelationDataset(*process_bert(process_data, tokenizers, vocab))
+        dataloader = DataLoader(
+            dataset=dataset,
+            batch_size=config.batch_size,
+            collate_fn=collate_fn,
+            shuffle=False,
+            num_workers=4,
+            drop_last=False,
+            pin_memory=True
+        )
+
+        # 推理并返回结果
+        trainer = predict_trainer(model)
+        trainer.load(config.save_path)
+        results = trainer.predict("Final", dataloader, process_data)  # 传入处理后的数据
+        return jsonify(results)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 class predict_trainer(object):
     def __init__(self, model):
